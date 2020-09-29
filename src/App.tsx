@@ -1,15 +1,8 @@
 import React from 'react';
 import './App.css';
-import Button from '@material-ui/core/Button';
 
-const App = (): JSX.Element => {
-    return (
-        <div>
-            <Button variant="contained" color="primary">
-                Hello World
-            </Button>
-        </div>
-    );
-}
+import LoginPage from './pages/Login/Login';
+
+const App = (): JSX.Element => <LoginPage />;
 
 export default App;
