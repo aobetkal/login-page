@@ -1,0 +1,14 @@
+.card-header-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-header-logo {
+    max-width: 50px;
+    margin: 0 auto;
+}
+
+.card-header {
+    text-align: center;
+}
