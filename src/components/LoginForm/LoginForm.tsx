@@ -6,36 +6,62 @@ import CardContent from '@material-ui/core/CardContent';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import { validateEmail, validatePassword } from '../../helpers/formValidators/Validators/formValidator';
+import { requestHandler } from '../../helpers/requestHandlers/Handlers/requestHandler';
+import { RequestHandlerProps } from '../../helpers/requestHandlers/Handlers/requestHandlerProps';
+import { UserProps } from './LoginFormProps';
 
 import logo from '../../assets/images/logo.png';
 
 import './LoginForm.css';
 
 const LoginForm = (): JSX.Element => {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [hasError, setHasError] = useState<boolean>(false);
     const [hasEmailError, setHasEmailError] = useState<boolean>(false);
     const [hasPasswordError, setHasPasswordError] = useState<boolean>(false);
+    const [user, setUser] = useState<UserProps | null>(null);
 
     useEffect(() => {
 
-    }, [hasEmailError, hasPasswordError]);
+    }, [user]);
 
     const handleFormSubmit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
+        setHasError(false);
 
         const {currentTarget: { email, password }} = event;
 
         const emailValue: string = email.value;
         const passwordValue: string = password.value;
+        const hasFormErrors: boolean = handleFormErrors(emailValue, passwordValue);
 
-        setHasEmailError(!validateEmail(emailValue));
-        setHasPasswordError(!validatePassword(passwordValue));
-
-        if (hasEmailError || hasPasswordError) {
+        if (hasFormErrors) {
             return; 
         }
 
+        const requestHandlerProps: RequestHandlerProps = {
+            email: emailValue,
+            password: passwordValue,
+            setIsLoading,
+            setHasError,
+            setUser
+        };
+
+        requestHandler(requestHandlerProps);
+    };
+
+    const handleFormErrors = (email: string, password: string): boolean => {
+        const isEmailValidated: boolean = validateEmail(email);
+        const isPasswordValidated: boolean = validatePassword(password);
+        const hasErrors: boolean = !isEmailValidated || !isPasswordValidated;
+
+        setHasEmailError(!isEmailValidated);
+        setHasPasswordError(!isPasswordValidated);
+
+        return hasErrors;
     };
 
     return (
@@ -49,6 +75,7 @@ const LoginForm = (): JSX.Element => {
                 <CardHeader 
                     className='card-header'
                     title='Login'
+                    style={{padding: '0'}}
                 />
             </div>
             <CardContent>
@@ -62,6 +89,7 @@ const LoginForm = (): JSX.Element => {
                         label='Email'
                         name='email'
                         autoComplete='email'
+                        disabled={isLoading}
                     />
                     {
                         hasEmailError && 
@@ -78,6 +106,7 @@ const LoginForm = (): JSX.Element => {
                         type='password'
                         id='password'
                         autoComplete='current-password'
+                        disabled={isLoading}
                     />
                     {
                         hasPasswordError && 
@@ -91,9 +120,17 @@ const LoginForm = (): JSX.Element => {
                         type='submit'
                         fullWidth
                         variant='contained'
+                        disabled={isLoading}
                     >
                         Sign in
                     </Button>
+                    { isLoading && <LinearProgress /> }
+                    {
+                        hasError && 
+                        <Typography color='error' display='inline'>
+                            User not found. Check your credentials and try again.
+                        </Typography>
+                    }
                 </form>
             </CardContent>
         </Card>
