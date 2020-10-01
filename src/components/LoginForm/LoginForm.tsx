@@ -37,7 +37,9 @@ const LoginForm = (): JSX.Element => {
 
     const handleFormSubmit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
+
         setHasError(false);
+        setUser(null);
 
         const hasFormErrors: boolean = handleFormErrors(email, password);
 
